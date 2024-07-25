@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <title>20th Century Fox</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.152.2/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.152.2/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+      import { FontLoader } from "three/addons/loaders/FontLoader.js";
+      //import { Fireworks } from 'https://cdn.skypack.dev/fireworks-js';
+
+      // サイズを指定
+      const width = 960;
+      const height = 540;
+
+      // レンダラーを作成
+      const renderer = new THREE.WebGLRenderer({
+        canvas: document.querySelector("#myCanvas"),
+        alpha: true,
+      });
+
+      //console.log(document.querySelector("#myCanvas").attributes);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+      document.body.appendChild(renderer.domElement);
+
+
+      // シーンを作成
+      const scene = new THREE.Scene();
+      scene.background = null;
+
+      // カメラを作成
+      const camera = new THREE.PerspectiveCamera(45, width / height);
+      camera.position.set(-400, 500, 400);
+      camera.lookAt(0, 0, 0)
+
+      //並行光源
+      const directionalLight1 = new THREE.DirectionalLight(0xffffff);
+      directionalLight1.position.set(100, 500, 1500);
+      scene.add(directionalLight1);
+
+      //全体を明るく
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
+      scene.add(ambientLight);
+
+      //スポットライト
+      const spotLight = new THREE.SpotLight(0xffffff);
+      spotLight.position.set(-100, -200, 400); // スポットライトをシーンの下に配置
+      spotLight.target.position.set(-100, 0,200); // スポットライトのターゲットをシーンの中心に設定
+      spotLight.angle = Math.PI / 5; // スポットライトの角度を小さくして細い光束にする
+      spotLight.penumbra = 0.1; 
+      scene.add(spotLight);
+      scene.add(spotLight.target);
+      console.log("spotlight");
+
+
+      //座標ヘルパー
+      //const size = 1000;
+      //scene.add(new THREE.AxesHelper(size));
+
+      // foxとcenturyの間の板
+      const geometry = new THREE.BoxGeometry(470, 450, 20);
+      const material = new THREE.MeshStandardMaterial({color: 0xffa500, roughness:0.1});
+      const stage1 = new THREE.Mesh(geometry, material);
+      stage1.rotation.set(Math.PI/2, 0, 0 )
+      scene.add(stage1);
+
+      //centuryと20の間の板
+      const stage2 = new THREE.Mesh(
+        new THREE.BoxGeometry(490, 470, 30), 
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+        );
+      stage2.rotation.set(Math.PI/2, 0, 0 )
+      stage2.position.set(0, 100, 0)
+      scene.add(stage2);
+
+      //centuryの上の薄い板
+      const stage3 = new THREE.Mesh(
+        new THREE.BoxGeometry(450, 450, 20), 
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+        );
+      stage3.rotation.set(Math.PI/2, 0, 0 )
+      stage3.position.set(0, 90, 0)
+      scene.add(stage3);
+
+      //foxの下の板たち
+      const stage4 = new THREE.Mesh(
+        new THREE.BoxGeometry(490, 470, 10), 
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+        );
+      stage4.rotation.set(Math.PI/2, 0, 0 )
+      stage4.position.set(0, -130, 0)
+      scene.add(stage4);
+
+      const stage5 = new THREE.Mesh(
+        new THREE.CylinderGeometry(330, 310, 10, 4),
+        new THREE.MeshStandardMaterial({color: 0xffa500, roughness:0.1})
+      );
+      stage5.rotation.set(0, Math.PI*3/4,  0)
+      stage5.position.set(0, -140, 0)
+      scene.add(stage5);
+
+      const stage6 = new THREE.Mesh(
+        new THREE.CylinderGeometry(310, 330, 10, 4),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      stage6.rotation.set(0, Math.PI*3/4,  0)
+      stage6.position.set(0, -150, 0)
+      scene.add(stage6);
+
+      const stage7 = new THREE.Mesh(
+        new THREE.BoxGeometry(490, 470, 5), 
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+        );
+      stage7.rotation.set(Math.PI/2, 0, 0 )
+      stage7.position.set(0, -160, 0)
+      scene.add(stage7);
+
+      //土台
+      const foundation = new THREE.Mesh(
+        new THREE.BoxGeometry(490, 470, 150), 
+        new THREE.MeshStandardMaterial({color: 0xffa500, roughness:0.1})
+        );
+      foundation.rotation.set(Math.PI/2, 0, 0 )
+      foundation.position.set(0, -220, 0)
+      scene.add(foundation);
+
+
+      // フォントローダーを使用してテキストジオメトリを作成
+      //FOX
+      const loader_fox = new FontLoader();
+      loader_fox.load(
+        "https://unpkg.com/three@0.152.2/examples/fonts/helvetiker_bold.typeface.json",
+        function (font) {
+          const textGeometry = new TextGeometry("FOX", {
+            font: font,
+            size: 130,
+            height: 18,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 200,
+            bevelSize: 8,
+            bevelOffset: 0,
+            bevelSegments: 5,
+          });
+
+          const textMaterial = new THREE.MeshStandardMaterial({color: 0xffa500, roughness:0.1});
+          const fox = new THREE.Mesh(textGeometry, textMaterial);
+          fox.position.set(-150,-140,0)
+          scene.add(fox);
+        }
+      );
+
+      //century
+      const loader_century = new FontLoader();
+      loader_century.load(
+        "https://unpkg.com/three@0.152.2/examples/fonts/helvetiker_bold.typeface.json",
+        function (font) {
+          const textGeometry = new TextGeometry("CENTURY", {
+            font: font,
+            size: 70,
+            height: 20,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 200,
+            bevelSize: 8,
+            bevelOffset: 0,
+            bevelSegments: 5,
+          });
+
+          const textMaterial = new THREE.MeshStandardMaterial({color: 0xffa500, roughness:0.1});
+          const century = new THREE.Mesh(textGeometry, textMaterial);
+          century.position.set(-220,0,0)
+          scene.add(century);
+        }
+      );
+
+      //20
+      const loader_20 = new FontLoader();
+      loader_20.load(
+        "https://unpkg.com/three@0.152.2/examples/fonts/helvetiker_bold.typeface.json",
+        function (font) {
+          const textGeometry = new TextGeometry("20", {
+            font: font,
+            size: 200,
+            height: 20,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 200,
+            bevelSize: 8,
+            bevelOffset: 0,
+            bevelSegments: 5,
+          });
+
+          const textMaterial = new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1});
+          const twenty = new THREE.Mesh(textGeometry, textMaterial);
+          twenty.position.set(-190,100,0)
+          scene.add(twenty);
+        }
+      );
+
+      //th
+      const th = new FontLoader();
+      th.load(
+        "https://unpkg.com/three@0.152.2/examples/fonts/helvetiker_bold.typeface.json",
+        function (font) {
+          const textGeometry = new TextGeometry("th", {
+            font: font,
+            size: 70,
+            height: 20,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 200,
+            bevelSize: 8,
+            bevelOffset: 0,
+            bevelSegments: 5,
+          });
+
+          const textMaterial = new THREE.MeshStandardMaterial({color: 0xffa500, roughness:0.1});
+          const th = new THREE.Mesh(textGeometry, textMaterial);
+          th.position.set(120,100,0)
+          scene.add(th);
+        }
+      );
+
+      //一番下の板
+      const ground = new THREE.Mesh(
+        new THREE.BoxGeometry(1000, 1000, 20), 
+        new THREE.MeshStandardMaterial({color: 0xac6b25, roughness:0.1})
+        );
+      ground.rotation.set(Math.PI/2, 0, 0 )
+      ground.position.set(0, -300, 0)
+      scene.add(ground);
+
+      //メインのfoxの前の半円柱のオブジェ
+      const decoration = new THREE.Mesh(
+        new THREE.CylinderGeometry(150, 150, 130, 32, 1, false, 0,  Math.PI),
+        new THREE.MeshStandardMaterial({color: 0xaffa500, roughness:0.1})
+      );
+      decoration.rotation.set(0, -Math.PI/2, 0 )
+      decoration.position.set(90, -230, 230);
+      scene.add(decoration);
+
+      const decoration_ita1 = new THREE.Mesh(
+        new THREE.CylinderGeometry(170, 170, 15, 32, 1, false, 0,  Math.PI),
+        new THREE.MeshStandardMaterial({color: 0xffa500, roughness:0.1})
+      );
+      decoration_ita1.rotation.set(0, -Math.PI/2, 0 )
+      decoration_ita1.position.set(90, -170, 230);
+      scene.add(decoration_ita1);
+
+      const decoration_ita2 = new THREE.Mesh(
+        new THREE.CylinderGeometry(180, 180, 10, 32, 1, false, 0,  Math.PI),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      decoration_ita2.rotation.set(0, -Math.PI/2, 0 )
+      decoration_ita2.position.set(90, -155, 230);
+      scene.add(decoration_ita2);
+
+      const decoration_ita3 = new THREE.Mesh(
+        new THREE.CylinderGeometry(230, 230, 15, 32, 1, false, 0,  Math.PI),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      decoration_ita3.rotation.set(0, -Math.PI/2, 0 )
+      decoration_ita3.position.set(200, -100, 210);
+      scene.add(decoration_ita1);
+
+      const dekoboko1 = new THREE.Mesh(
+        new THREE.BoxGeometry(20, 130, 30),
+        new THREE.MeshStandardMaterial({color: 0xac6b25, roughness:0.1})
+      );
+      dekoboko1.position.set(150, -240, 360);
+      dekoboko1.rotation.set(0, Math.PI/12, 0);
+      scene.add(dekoboko1);
+
+      const dekoboko2 = dekoboko1.clone();
+      dekoboko2.position.set(100, -240, 370);
+      dekoboko2.rotation.set(0, Math.PI/13, 0);
+      scene.add(dekoboko2);
+
+      const dekoboko3 = dekoboko1.clone();
+      dekoboko3.position.set(50, -240, 365);
+      dekoboko3.rotation.set(0,  Math.PI/12, 0);
+      scene.add(dekoboko3);
+
+
+      //オベリスクみたいなオブジェ
+      const tower = new THREE.Mesh(
+        new THREE.BoxGeometry(100, 100, 300),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      tower.rotation.set(Math.PI/2, 0, 0);
+      tower.position.set(350, -150, 80);
+      scene.add(tower);
+
+      const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(60, 32, 16),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      sphere.position.set(350, 70, 80);
+      scene.add(sphere);
+
+      //階段
+      // 階段の追加
+      const stepWidth = 300;
+      const stepHeight = 20;
+      const stepDepth = 40;
+      const stepCount = 6;
+
+      for (let i = 0; i < stepCount; i++) {
+        const step = new THREE.Mesh(
+          new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth), 
+          new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+          );
+        step.rotation.set(0, Math.PI/2, 0);
+        step.position.set(-440 +i * stepDepth, -300 + i * stepHeight, 50);
+        scene.add(step);
+      }
+
+      //星屑を作成
+      createStarField();
+
+      //星屑を作成
+      function createStarField(){
+       //頂点情報を作成
+        const vertices = [];
+        for(let i=0; i < 2500; i++){
+            const x = 3000*(Math.random() - 0.5);
+            const y = 3000 * (Math.random() - 0.5);
+            const z = 3000 * (Math.random() - 0.5);
+
+            vertices.push(x, y, z);
+      }
+
+       //形状データを作成
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+
+       //マテリアルを作成
+        const material = new THREE.PointsMaterial({
+        size: 10,
+        color: 0xffffff,
+        });
+
+       //物体を作成
+        const mesh = new THREE.Points(geometry, material);
+        scene.add(mesh);
+      }
+
+      //ライトの土台
+      const light_box1 = new THREE.Mesh(
+        new THREE.BoxGeometry(60, 60, 70),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      light_box1.rotation.set(Math.PI/2, 0, 0);
+      light_box1.position.set(320, -270, 280);
+      //scene.add(light_box1);
+
+      const light_box2 = new THREE.Mesh(
+        new THREE.BoxGeometry(40, 40, 50),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      light_box2.rotation.set(Math.PI/2, 0, 0);
+      light_box2.position.set(320, -220, 280);
+      //scene.add(light_box2);
+
+      const light_box3 = new THREE.Mesh(
+        new THREE.BoxGeometry(20, 20, 30),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      light_box3.rotation.set(Math.PI/2, 0, 0);
+      light_box3.position.set(320, -180, 280);
+      //scene.add(light_box3);
+
+      const light_release1 = new THREE.Mesh(
+        new THREE.CylinderGeometry(60, 20, 30, 9),
+        new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
+      );
+      light_release1.rotation.set(0, 0, Math.PI/5);
+      light_release1.position.set(320, -150, 280);
+      //scene.add(light_release1);
+
+      const light_box_group1 = new THREE.Group();
+      light_box_group1.add(light_box1);
+      light_box_group1.add(light_box2);
+      light_box_group1.add(light_box3);
+      light_box_group1.add(light_release1);
+
+      light_box_group1.position.set(0, 0, 0)
+      scene.add(light_box_group1);
+
+      const light_box_group2 = light_box_group1.clone();
+      light_box_group2.position.set(-520, 0, 10)
+      const light_release2 = light_box_group2.children[3];
+      light_release2.rotation.set(0, 0, -Math.PI/7)
+      scene.add(light_box_group2);
+
+      const light_box_group3 = light_box_group1.clone();
+      light_box_group3.position.set(-620, 0, -400)
+      const light_release3 = light_box_group3.children[3];
+      light_release3.rotation.set(Math.PI/7, 0, Math.PI/5)
+      scene.add(light_box_group3);
+
+      const light_box_group4 = light_box_group1.clone();
+      light_box_group4.position.set(-420, 0, -570)
+      const light_release4 = light_box_group4.children[3];
+      light_release4.rotation.set(-Math.PI/5, 0, Math.PI/5)
+      scene.add(light_box_group4);
+
+      const light_box_group5 = light_box_group1.clone();
+      light_box_group5.position.set(-150, 0, -600)
+      const light_release5 = light_box_group5.children[3];
+      light_release5.rotation.set(Math.PI/5, 0, -Math.PI/5)
+      scene.add(light_box_group5);
+
+      //雲
+      const cloud_geometry = new THREE.TorusKnotGeometry(40, 50, 100, 16)
+      const cloud_material = new THREE.MeshLambertMaterial({ // 材質  
+        map: new THREE.TextureLoader().load("imgs/cloud.png"),   
+        transparent: true,
+        side: THREE.DoubleSide // 裏からも見えるようにする                         
+      })
+      const cloud1 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud1.position.set(-300, 600, -500);
+      scene.add(cloud1);
+
+      const cloud2 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud2.position.set(300, 400, -500);
+      scene.add(cloud2);
+
+      const cloud3 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud3.position.set(200, 500, -550);
+      scene.add(cloud3);
+
+      const cloud4 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud4.position.set(300, 550, -500);
+      scene.add(cloud4);
+
+      const cloud5 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud5.position.set(-400, 450, -550);
+      scene.add(cloud5);
+
+      const cloud6 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud6.position.set(400, 450, -550);
+      scene.add(cloud6);
+
+      const cloud7 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud7.position.set(-1100, 550, -500);
+      scene.add(cloud7);
+
+      const cloud8 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud8.position.set(-1150, 450, -550);
+      scene.add(cloud8);
+
+      const cloud9 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud9.position.set(-1100, 450, -550);
+      scene.add(cloud9);
+
+      const cloud10 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud10.position.set(-1000, 450, -550);
+      scene.add(cloud10);
+
+      const cloud11 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud8.position.set(-1150, 250, -550);
+      scene.add(cloud8);
+
+      const cloud12 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud9.position.set(-1100, 350, -550);
+      scene.add(cloud9);
+
+      const cloud13 = new THREE.Mesh(cloud_geometry, cloud_material);
+      cloud10.position.set(-1000, 300, -550);
+      scene.add(cloud10);
+
+
+      //サーチライト
+      const light_cylinder = new THREE.CylinderGeometry(8, 8, 900, 25, 25, true);
+      const light_material = new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load("imgs/light_effect.jpeg"),        
+        color: 0xffffff, // 色
+        transparent: true, // 透明の表示許可
+        blending: THREE.AdditiveBlending, // ブレンドモード
+        side: THREE.DoubleSide, // 表裏の表示設定
+        depthWrite: false // デプスバッファへの書き込み可否
+      });
+      const light_object1 = new THREE.Mesh(light_cylinder, light_material);
+      light_object1.position.set(200, 300, 300)
+      light_object1.rotation.set(0, Math.PI/13,  Math.PI/13);
+      scene.add(light_object1);
+
+      const light_object2 = new THREE.Mesh(light_cylinder, light_material);
+      light_object2.position.set(-130, 300, 300)
+      light_object2.rotation.set(0,-Math.PI/18,  -Math.PI/18);
+      scene.add(light_object2);
+
+      const light_object3 = new THREE.Mesh(light_cylinder, light_material);
+      light_object3.position.set(-480, 300, -50)
+      light_object3.rotation.set(0, Math.PI/8, Math.PI/8);
+      scene.add(light_object3);
+
+      const light_object4 = new THREE.Mesh(light_cylinder, light_material);
+      light_object4.position.set(-270, 300, -400)
+      light_object4.rotation.set(-Math.PI/8,  Math.PI/8, Math.PI/8);
+      scene.add(light_object4);
+
+      const light_object5 = new THREE.Mesh(light_cylinder, light_material);
+      light_object5.position.set(400, 300, -200)
+      light_object5.rotation.set(0, -Math.PI/6, -Math.PI/6);
+      scene.add(light_object5);
+
+      //サーチライトを回す
+      //const group = new THREE.Group();
+      //group.add(light_object1);
+      //group.position.set(150, -50, 100);
+      //scene.add(group);
+
+
+
+
+      //花火
+      function fireworks(){
+        const count_particles = 1000;
+        const particles = new THREE.BufferGeometry();
+        const position = new BufferAttribute(new Float32Array(count_particles * 3));
+
+      }
+
+
+      //マウスに応じてカメラの位置を動かす
+      let down = false;
+      let sy = 0, sz = 0;
+      window.addEventListener('mousedown', function (ev) {
+        if (ev.target === renderer.domElement) {
+          down = true;
+          sy = ev.clientX;
+          sz = ev.clientY;
+        }
+      });
+
+      window.addEventListener('mouseup', function () {
+        down = false;
+      });
+
+      window.addEventListener('mousemove', function (ev) {
+        if (down && ev.target === renderer.domElement) {
+          var speed = 0.7; // Adjust the speed factor
+          var dy = ev.clientX - sy;
+          var dz = ev.clientY - sz;
+          camera.position.y += dy * speed;
+          camera.position.z -= dz * speed;
+          sy = ev.clientX;
+          sz = ev.clientY;
+          camera.lookAt(new THREE.Vector3(0, 0, 0)); // Keep looking at the origin
+        }
+      });
+
+      
+       // 毎フレーム時に実行されるループイベント
+      let angle = 0;
+      let radius_z = 800; // カメラの半径
+      let radius_y = 500;
+      let radius_x = 800;
+      let search_light_angle = 0;
+
+
+      tick();
+      function tick() {
+
+        if (angle==0){
+          camera.position.set(-400, 500, 400);
+           //camera.lookAt(0, 0, 0)
+          console.log("0");
+          angle += 0.005;          
+        }
+        else {
+          if (camera.position.x == 430){
+            camera.position.set(camera.position.x, camera.position.y, camera.position.z);
+            //fireworks();
+          }
+          else if(camera.position.x < 150 && camera.position.y > -280 && camera.position.z <800){
+            camera.position.x = radius_x * Math.sin(-Math.PI/3 + angle/6);
+            camera.position.z = radius_z * Math.cos(-Math.PI/3 + angle/4);
+            camera.position.y = radius_y * Math.cos(angle);
+            angle += 0.002;
+            radius_y += 0.1;
+            radius_x += 0.07;
+            radius_z += 0.07;
+          }
+          else if(camera.position.x < 150 && camera.position.y < -280 && camera.position.z < 800){
+            angle += 0.005;
+            camera.position.x = radius_x * Math.sin(-Math.PI/3 + angle/6);
+            camera.position.z = radius_z * Math.cos(-Math.PI/3 + angle/4);
+             //camera.position.y = radius_y * Math.cos(angle);
+            radius_y += 0.1;
+          }else if(camera.position.x < 150 && camera.position.y < -280 && camera.position.z >= 800){
+            angle += 0.005;
+            radius_x += 0.3;
+            radius_z += 0.3;
+            camera.position.x = radius_x * Math.sin(-Math.PI/3 + angle/6);
+            camera.position.z = radius_z * Math.cos(-Math.PI/3 + angle/4);
+             //console.log("ゆっくり")
+          }
+          else if(camera.position.x >= 150 && camera.position.x < 180|| camera.position.y < -280 || camera.position.z >= 800){
+             //angle += 0.005;
+            if(camera.position.x < 400){
+              radius_x += 1.5;
+              camera.position.x = radius_x * Math.sin(-Math.PI/3 + angle/6);
+              camera.position.set(camera.position.x, camera.position.y, camera.position.z);
+            }
+            else{
+              camera.position.set(camera.position.x, camera.position.y, camera.position.z);
+            }
+          }
+           camera.lookAt(0, 0, 0); // カメラを原点に向ける
+        }
+        //search_light_angle += 0.01;
+        ///light_object1.rotation.set(Math.cos(angle)/4, 0, Math.sin(angle)/5);
+
+        camera.lookAt(0, 0, 0);
+        renderer.render(scene, camera); // レンダリング
+        requestAnimationFrame(tick);
+      }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas">
+      <div id="container"></div>
+    </canvas>
+</body>
+</html> 
