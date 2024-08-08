@@ -16,7 +16,6 @@
       import * as THREE from "three";
       import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
       import { FontLoader } from "three/addons/loaders/FontLoader.js";
-      //import { Fireworks } from 'https://cdn.skypack.dev/fireworks-js';
 
       // サイズを指定
       const width = 960;
@@ -28,7 +27,6 @@
         alpha: true,
       });
 
-      //console.log(document.querySelector("#myCanvas").attributes);
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
       document.body.appendChild(renderer.domElement);
@@ -62,10 +60,6 @@
       scene.add(spotLight.target);
       console.log("spotlight");
 
-
-      //座標ヘルパー
-      //const size = 1000;
-      //scene.add(new THREE.AxesHelper(size));
 
       // foxとcenturyの間の板
       const geometry = new THREE.BoxGeometry(470, 450, 20);
@@ -363,64 +357,53 @@
       );
       light_box1.rotation.set(Math.PI/2, 0, 0);
       light_box1.position.set(320, -270, 280);
-      //scene.add(light_box1);
-
+      
       const light_box2 = new THREE.Mesh(
         new THREE.BoxGeometry(40, 40, 50),
         new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
       );
       light_box2.rotation.set(Math.PI/2, 0, 0);
       light_box2.position.set(320, -220, 280);
-      //scene.add(light_box2);
-
+      
       const light_box3 = new THREE.Mesh(
         new THREE.BoxGeometry(20, 20, 30),
         new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
       );
       light_box3.rotation.set(Math.PI/2, 0, 0);
       light_box3.position.set(320, -180, 280);
-      //scene.add(light_box3);
+      
 
       const light_release1 = new THREE.Mesh(
         new THREE.CylinderGeometry(60, 20, 30, 9),
         new THREE.MeshStandardMaterial({color: 0xfffa500, roughness:0.1})
       );
-      light_release1.rotation.set(0, 0, Math.PI/5);
-      light_release1.position.set(320, -150, 280);
-      //scene.add(light_release1);
+      light_release1.position.set(0, 0, 0);
+      
 
       const light_box_group1 = new THREE.Group();
       light_box_group1.add(light_box1);
       light_box_group1.add(light_box2);
       light_box_group1.add(light_box3);
-      light_box_group1.add(light_release1);
 
-      light_box_group1.position.set(0, 0, 0)
+      light_box_group1.position.set(0, 0, 0);
       scene.add(light_box_group1);
 
       const light_box_group2 = light_box_group1.clone();
-      light_box_group2.position.set(-520, 0, 10)
-      const light_release2 = light_box_group2.children[3];
-      light_release2.rotation.set(0, 0, -Math.PI/7)
+      light_box_group2.position.set(-520, 0, 10);
       scene.add(light_box_group2);
 
       const light_box_group3 = light_box_group1.clone();
-      light_box_group3.position.set(-620, 0, -400)
-      const light_release3 = light_box_group3.children[3];
-      light_release3.rotation.set(Math.PI/7, 0, Math.PI/5)
+      light_box_group3.position.set(-620, 0, -400);
       scene.add(light_box_group3);
 
       const light_box_group4 = light_box_group1.clone();
-      light_box_group4.position.set(-420, 0, -570)
-      const light_release4 = light_box_group4.children[3];
-      light_release4.rotation.set(-Math.PI/5, 0, Math.PI/5)
+      light_box_group4.position.set(-420, 0, -570);
       scene.add(light_box_group4);
 
       const light_box_group5 = light_box_group1.clone();
-      light_box_group5.position.set(-150, 0, -600)
-      const light_release5 = light_box_group5.children[3];
-      light_release5.rotation.set(Math.PI/5, 0, -Math.PI/5)
+      light_box_group5.position.set(-150, 0, -600);
       scene.add(light_box_group5);
+
 
       //雲
       const cloud_geometry = new THREE.TorusKnotGeometry(40, 50, 100, 16)
@@ -493,47 +476,26 @@
         depthWrite: false // デプスバッファへの書き込み可否
       });
       const light_object1 = new THREE.Mesh(light_cylinder, light_material);
-      light_object1.position.set(200, 300, 300)
-      light_object1.rotation.set(0, Math.PI/13,  Math.PI/13);
-      scene.add(light_object1);
+      light_object1.position.set(0, 450, 0)
+      
 
-      const light_object2 = new THREE.Mesh(light_cylinder, light_material);
-      light_object2.position.set(-130, 300, 300)
-      light_object2.rotation.set(0,-Math.PI/18,  -Math.PI/18);
-      scene.add(light_object2);
+      const light_release_group1 = new THREE.Group();
+      light_release_group1.add(light_object1);
+      light_release_group1.add(light_release1);
+      //group.position.set(0, 360, 0);
+      scene.add(light_release_group1);
 
-      const light_object3 = new THREE.Mesh(light_cylinder, light_material);
-      light_object3.position.set(-480, 300, -50)
-      light_object3.rotation.set(0, Math.PI/8, Math.PI/8);
-      scene.add(light_object3);
+      const light_release_group2 = light_release_group1.clone();
+      scene.add(light_release_group2);
 
-      const light_object4 = new THREE.Mesh(light_cylinder, light_material);
-      light_object4.position.set(-270, 300, -400)
-      light_object4.rotation.set(-Math.PI/8,  Math.PI/8, Math.PI/8);
-      scene.add(light_object4);
+      const light_release_group3 = light_release_group1.clone();
+      scene.add(light_release_group3);
 
-      const light_object5 = new THREE.Mesh(light_cylinder, light_material);
-      light_object5.position.set(400, 300, -200)
-      light_object5.rotation.set(0, -Math.PI/6, -Math.PI/6);
-      scene.add(light_object5);
+      const light_release_group4 = light_release_group1.clone();
+      scene.add(light_release_group4);
 
-      //サーチライトを回す
-      //const group = new THREE.Group();
-      //group.add(light_object1);
-      //group.position.set(150, -50, 100);
-      //scene.add(group);
-
-
-
-
-      //花火
-      function fireworks(){
-        const count_particles = 1000;
-        const particles = new THREE.BufferGeometry();
-        const position = new BufferAttribute(new Float32Array(count_particles * 3));
-
-      }
-
+      const light_release_group5 = light_release_group1.clone();
+      scene.add(light_release_group5);
 
       //マウスに応じてカメラの位置を動かす
       let down = false;
@@ -570,21 +532,26 @@
       let radius_y = 500;
       let radius_x = 800;
       let search_light_angle = 0;
+      let radius = 1000;
+
+
+      light_release_group1.position.set(320, -160, 280);
+      light_release_group2.position.set(-200, -160, 280);
+      light_release_group3.position.set(-300, -160, -130);
+      light_release_group4.position.set(-100, -160, -290);
+      light_release_group5.position.set(170, -160, -320);
 
 
       tick();
       function tick() {
-
         if (angle==0){
           camera.position.set(-400, 500, 400);
-           //camera.lookAt(0, 0, 0)
           console.log("0");
           angle += 0.005;          
         }
         else {
           if (camera.position.x == 430){
             camera.position.set(camera.position.x, camera.position.y, camera.position.z);
-            //fireworks();
           }
           else if(camera.position.x < 150 && camera.position.y > -280 && camera.position.z <800){
             camera.position.x = radius_x * Math.sin(-Math.PI/3 + angle/6);
@@ -622,8 +589,12 @@
           }
            camera.lookAt(0, 0, 0); // カメラを原点に向ける
         }
-        //search_light_angle += 0.01;
-        ///light_object1.rotation.set(Math.cos(angle)/4, 0, Math.sin(angle)/5);
+        search_light_angle += 0.003;
+        light_release_group1.rotation.set(Math.cos(angle)/2, 0, Math.sin(angle)/3);
+        light_release_group2.rotation.set(-Math.cos(angle)/2, 0, -Math.sin(angle)/5);
+        light_release_group3.rotation.set(Math.cos(angle)/2, 0, Math.sin(angle)/5);
+        light_release_group4.rotation.set(-Math.cos(angle)/2, 0, Math.sin(angle)/5);
+        light_release_group5.rotation.set(Math.cos(angle)/2, 0, Math.sin(angle)/5);
 
         camera.lookAt(0, 0, 0);
         renderer.render(scene, camera); // レンダリング
